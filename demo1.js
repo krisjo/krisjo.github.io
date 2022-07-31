@@ -8,51 +8,31 @@ animate();
 function init() {
 
 	scene = new THREE.Scene();
-	//scene.background = new THREE.Color( 0x0ff1f1 );
-
-	const container = document.getElementById('cube');
-    var fov = 30;
-    var aspect = container.offsetWidth / container.offsetHeight;
-    var near = 0.10;
-    var far = 100;
 
 	geometry = new THREE.BoxGeometry();
 
 	const materialKristjan = createMaterial('Kristján');
 	const materialJonsson = createMaterial('Jónsson');
-	var k2 = new THREE.MeshBasicMaterial({ map: loadImageTexture("/img/wt.png"), transparent: true }); 
-	var k1 = new THREE.MeshBasicMaterial({ map: loadImageTexture("/img/200px-Kyokushin.png"), transparent: true }); 
-	var k3 = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/img/kanku.png"), transparent: true }); 
-	var k4 = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/img/kankukalligrafi.png"), transparent: true });
 
-	const cvMaterials = [ materialKristjan, materialJonsson, k1, k2, k3, k4 ]; 
+	const cvMaterials = [ materialKristjan, materialJonsson, materialKristjan, materialJonsson, materialKristjan, materialJonsson ]; 
 	box = new THREE.Mesh( geometry, cvMaterials );
-	box.rotation.x = -0.9;
+	box.rotation.x = 0.3;
 	box.rotation.y = 0.3;
     scene.add( box );
 
+    
+    var fov = 30;
+    var aspect = window.innerWidth / window.innerHeight;
+    var near = 0.10;
+    var far = 100;
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 	camera.position.z = 4;
 
-	renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
-	renderer.setSize( container.offsetWidth, container.offsetHeight); //window.innerWidth , window.innerHeight
-
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	const container = document.getElementById('cube');
+	renderer.setSize( window.innerWidth , window.innerHeight); //container.offsetWidth, container.offsetHeight
 	container.appendChild( renderer.domElement );
 	document.addEventListener("wheel", zoomBox);
-
-	function loadImageTexture(filename) {
-		var imgTxt = new THREE.TextureLoader().load(filename, (tx) => {
-			tx.needsUpdate = true;
-			var imageAspect = tx.image.width / tx.image.height;
-			if (1 > imageAspect) {
-				tx.matrix.setUvTransform(0, 0, 1 / imageAspect, 1, 0, 0.5, 0.5);
-			} else {
-				tx.matrix.setUvTransform(0, 0, 1, imageAspect, 0, 0.5, 0.5);
-			}
-		});
-		imgTxt.matrixAutoUpdate = false;
-		return imgTxt;
-	}
 
 	function createMaterial(txt) {
 		const cv = document.createElement( 'canvas');
@@ -62,32 +42,27 @@ function init() {
 	
 		const cvTexture = new THREE.Texture(cv);
 		cvTexture.needsUpdate = true; // otherwise all black only
-		const cvMaterial = new THREE.MeshBasicMaterial({ map: cvTexture, transparent: true  });
+		const cvMaterial = new THREE.MeshBasicMaterial({ map: cvTexture });
 		return cvMaterial;
 	}
 
-	function setupContext(cv, text) {
+	function setupContext(cv, text) { // "./sprite.png"
 		const ctx = cv.getContext('2d');
-//		ctx.globalAlpha = 0.0;
-//		ctx.fillRect(0, 0, cv.width, cv.height);
-		ctx.fillStyle = 'black';
-		ctx.globalAlpha = 0.9;
+		ctx.fillStyle = '#fefefe';
+		ctx.globalAlpha = 0.00;
+		ctx.fillRect(0, 0, cv.width, cv.height);
+		ctx.fillStyle = 'white';
+		ctx.globalAlpha = 0.5;
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.font = 'bold 10vh Arial';
+		ctx.font = 'bold 6vh Arial';
 		ctx.fillText(text, 0.5 * cv.width, 0.5 * cv.height);
 	}
 }
 
 function animate() {
 	requestAnimationFrame( animate );
-	autoRotate();
 	renderer.render( scene, camera );
-}
-
-function autoRotate() {
-	box.rotation.x += 0.01;
-	box.rotation.y += 0.02;
 }
 
 function zoomCube(e) {
