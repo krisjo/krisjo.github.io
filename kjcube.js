@@ -1,4 +1,5 @@
 var camera, scene, renderer;
+var rotate = true;
 var geometry, material, box;
 var mouseX = 0, mouseY = 0;
 
@@ -11,6 +12,9 @@ function init() {
 	//scene.background = new THREE.Color( 0x0ff1f1 );
 
 	const container = document.getElementById('cube');
+	container.onmousedown = function() {
+		dragMouseDown();
+	  };
     var fov = 30;
     var aspect = container.offsetWidth / container.offsetHeight;
     var near = 0.10;
@@ -18,14 +22,14 @@ function init() {
 
 	geometry = new THREE.BoxGeometry();
 
-	const materialKristjan = createMaterial('Kristján');
-	const materialJonsson = createMaterial('Jónsson');
-	var k2 = new THREE.MeshBasicMaterial({ map: loadImageTexture("/img/wt.png"), transparent: true }); 
-	var k1 = new THREE.MeshBasicMaterial({ map: loadImageTexture("/img/200px-Kyokushin.png"), transparent: true }); 
-	var k3 = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/img/kanku.png"), transparent: true }); 
-	var k4 = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("/img/kankukalligrafi.png"), transparent: true });
+	var cvMaterials = [];
+	if (container.hasAttribute('texts')) {
+		container.getAttribute('texts').split(";").forEach(txt => cvMaterials.push(createMaterial(txt)));
+	}
+	if (container.hasAttribute('images')) {
+		container.getAttribute('images').split(";").forEach(img => cvMaterials.push(new THREE.MeshBasicMaterial({ map: loadImageTexture(img), transparent: true })));
+	}
 
-	const cvMaterials = [ materialKristjan, materialJonsson, k1, k2, k3, k4 ]; 
 	box = new THREE.Mesh( geometry, cvMaterials );
 	box.rotation.x = -0.9;
 	box.rotation.y = 0.3;
@@ -41,7 +45,7 @@ function init() {
 	document.addEventListener("wheel", zoomBox);
 
 	function loadImageTexture(filename) {
-		var imgTxt = new THREE.TextureLoader().load(filename, (tx) => {
+		var imgTexture = new THREE.TextureLoader().load(filename, (tx) => {
 			tx.needsUpdate = true;
 			var imageAspect = tx.image.width / tx.image.height;
 			if (1 > imageAspect) {
@@ -50,44 +54,39 @@ function init() {
 				tx.matrix.setUvTransform(0, 0, 1, imageAspect, 0, 0.5, 0.5);
 			}
 		});
-		imgTxt.matrixAutoUpdate = false;
-		return imgTxt;
+		imgTexture.matrixAutoUpdate = false;
+		return imgTexture;
 	}
 
 	function createMaterial(txt) {
 		const cv = document.createElement( 'canvas');
-		cv.width = 256;
-		cv.height = 128;
-		setupContext(cv,  txt);
-	
-		const cvTexture = new THREE.Texture(cv);
-		cvTexture.needsUpdate = true; // otherwise all black only
-		const cvMaterial = new THREE.MeshBasicMaterial({ map: cvTexture, transparent: true  });
+		const cvMaterial = new THREE.MeshBasicMaterial({ map: createTextTexture(cv,  txt), transparent: true  });
 		return cvMaterial;
 	}
 
-	function setupContext(cv, text) {
+	function createTextTexture(cv, text) {
 		const ctx = cv.getContext('2d');
-//		ctx.globalAlpha = 0.0;
-//		ctx.fillRect(0, 0, cv.width, cv.height);
 		ctx.fillStyle = 'black';
-		ctx.globalAlpha = 0.9;
+		ctx.globalAlpha = 1.0;
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.font = 'bold 10vh Arial';
 		ctx.fillText(text, 0.5 * cv.width, 0.5 * cv.height);
+		const cvTexture = new THREE.Texture(cv);
+		cvTexture.needsUpdate = true; // otherwise all black only
+		return cvTexture;
 	}
 }
 
 function animate() {
 	requestAnimationFrame( animate );
-	autoRotate();
+	if (rotate)	autoRotate();
 	renderer.render( scene, camera );
 }
 
 function autoRotate() {
-	box.rotation.x += 0.01;
-	box.rotation.y += 0.02;
+	box.rotation.x += 0.005;
+	box.rotation.y += 0.005;
 }
 
 function zoomCube(e) {
@@ -116,6 +115,7 @@ function dragMouseDown(e) {
     document.onmouseup = closeDragElement;
     // call a function whenever the cursor moves:
     document.onmousemove = elementDrag;
+	rotate = false;
   }
 
   function elementDrag(e) {
@@ -132,4 +132,5 @@ function dragMouseDown(e) {
     // stop moving when mouse button is released:
     document.onmouseup = null;
     document.onmousemove = null;
+	rotate = true;
   }
