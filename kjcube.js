@@ -55,6 +55,7 @@ function init() {
 			}
 		});
 		imgTexture.matrixAutoUpdate = false;
+		imgTexture.minFilter = THREE.LinearFilter;
 		return imgTexture;
 	}
 
@@ -74,6 +75,7 @@ function init() {
 		ctx.fillText(text, 0.5 * cv.width, 0.5 * cv.height);
 		const cvTexture = new THREE.Texture(cv);
 		cvTexture.needsUpdate = true; // otherwise all black only
+		cvTexture.minFilter = THREE.LinearFilter;
 		return cvTexture;
 	}
 }
