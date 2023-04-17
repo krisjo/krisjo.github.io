@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Kristján Jónsson</title>
-	</head>
-	<body>
-		<div id="cube" texts="Kristján;Jónsson" images="/img/200px-Kyokushin.png;/img/wt.png;/img/kyokushin-kanku.png;/img/Webstep-logo-sort-RGB.png" style="height : 512px; width : 512px; float : left;"></div>
-    </body>
-    <script src="./three.min.js"></script>
-    <script src="./kjcube.js"></script>
+  <head>
+    <meta charset="utf-8" />
+    <title>Kristján Jónsson</title>
+  </head>
+  <body
+    onload="initScuba()"
+    style="
+      height: auto;
+      min-height: 512px;
+      min-width: 512px;
+      background-image: url('/img/DSC03866.jpg');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    "
+  >
+    <img
+      id="scuba"
+      src="/img/DSC04013.jpg"
+      style="position: absolute; left: 200; top: 200"
+      width="200"
+      height="200"
+    />
+    <img
+      id="mouse"
+      src="/img/DSC03869.png"
+      style="position: absolute; left: 250; top: 250"
+      width="200"
+      height="160"
+    />
+  </body>
+  <script src="./scuba.js"></script>
 </html>
