@@ -18,6 +18,7 @@ const match = (letters, facit) => {
 class Spellfound extends React.Component {
 	constructor(props) {
 		super(props);
+		console.log('constructor - props = ' + props + ' props.puzzle = ' + this.props.puzzle);
 		this.state = {
 			letters : [], facit : {},
 			matrix : [],
@@ -192,6 +193,7 @@ class Spellfound extends React.Component {
 	}
 
 	componentDidMount() {
+		console.log('Mount - puzzle = ' + this.state.puzzle );
 		return fetch('/puzzles/' + this.state.puzzle + '.json')
 		.then(response => response.json())
 		.then((json) => {
